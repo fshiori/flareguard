@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeGrantRow, splitProxyKey } from "./key-store";
+import { hashProxySecret, normalizeGrantRow, splitProxyKey, verifyProxySecret } from "./key-store";
 
 describe("splitProxyKey", () => {
   it("splits a proxy key into key id and secret", () => {
@@ -28,5 +28,17 @@ describe("normalizeGrantRow", () => {
       resourceId: "ns_1",
       constraints: { prefixes: ["tenant-a:"] }
     });
+  });
+});
+
+describe("proxy secret hashing", () => {
+  it("verifies a matching secret", async () => {
+    const hash = await hashProxySecret("secret-value");
+    await expect(verifyProxySecret("secret-value", hash)).resolves.toBe(true);
+  });
+
+  it("rejects a different secret", async () => {
+    const hash = await hashProxySecret("secret-value");
+    await expect(verifyProxySecret("other-value", hash)).resolves.toBe(false);
   });
 });
