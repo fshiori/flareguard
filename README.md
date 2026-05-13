@@ -170,6 +170,47 @@ Apply migrations with Wrangler when a real D1 database is configured:
 wrangler d1 migrations apply flareguard --config wrangler.production.toml
 ```
 
+## Admin CLI
+
+Use the admin scripts to create proxy keys and grants in the remote D1 database. These commands use `wrangler.production.toml` by default, so keep that file private.
+
+Create a proxy key:
+
+```bash
+pnpm admin:create-key \
+  --name tenant-a \
+  --account-id <cloudflare-account-id>
+```
+
+The command prints the full proxy key once:
+
+```text
+fgk_<key-id>.<secret>
+```
+
+Store it immediately. Only the SHA-256 hash is written to D1.
+
+Create a grant:
+
+```bash
+pnpm admin:add-grant \
+  --key-id fgk_<key-id> \
+  --capability d1.database.write \
+  --resource-type d1_database \
+  --resource-id <d1-database-id>
+```
+
+Optional JSON constraints can be supplied with `--constraints`:
+
+```bash
+pnpm admin:add-grant \
+  --key-id fgk_<key-id> \
+  --capability kv.namespace.write \
+  --resource-type kv_namespace \
+  --resource-id <kv-namespace-id> \
+  --constraints '{"prefixes":["tenant-a:"]}'
+```
+
 ## Development Notes
 
 - Keep new Cloudflare-compatible endpoints explicit in `src/endpoints/registry.ts`.

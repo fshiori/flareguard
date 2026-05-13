@@ -3,6 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "admin:add-grant": "node scripts/admin/add-grant.mjs",
+    "admin:create-key": "node scripts/admin/create-key.mjs",
     "dev": "wrangler dev",
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc --noEmit"
