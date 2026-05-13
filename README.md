@@ -106,7 +106,30 @@ pnpm dev
 
 ## Cloudflare Bindings
 
-`wrangler.toml` defines a D1 binding:
+This is an open-source repo, so real Cloudflare IDs and secrets should not be committed.
+
+Committed files:
+
+- `wrangler.toml`: local/development placeholder config.
+- `wrangler.example.toml`: template for private deployment config.
+- `.env.example`: documents environment variables without values.
+
+Ignored private files:
+
+- `.env`
+- `.env.*`
+- `wrangler.local.toml`
+- `wrangler.production.toml`
+
+Create a private deployment config from the example:
+
+```bash
+cp wrangler.example.toml wrangler.production.toml
+```
+
+Then edit `wrangler.production.toml` and replace `<your-d1-database-id>` with the real D1 database id.
+
+The committed `wrangler.toml` keeps a placeholder D1 binding:
 
 ```toml
 [[d1_databases]]
@@ -115,7 +138,11 @@ database_name = "flareguard"
 database_id = "00000000-0000-0000-0000-000000000000"
 ```
 
-For real deployments, replace the placeholder `database_id` with the deployed D1 database id.
+For real deployments, use the private config file:
+
+```bash
+wrangler deploy --config wrangler.production.toml
+```
 
 The Worker also expects this secret:
 
@@ -126,7 +153,7 @@ CLOUDFLARE_API_TOKEN
 Set it with Wrangler:
 
 ```bash
-wrangler secret put CLOUDFLARE_API_TOKEN
+wrangler secret put CLOUDFLARE_API_TOKEN --config wrangler.production.toml
 ```
 
 ## Database
@@ -140,7 +167,7 @@ The initial migration creates:
 Apply migrations with Wrangler when a real D1 database is configured:
 
 ```bash
-wrangler d1 migrations apply flareguard
+wrangler d1 migrations apply flareguard --config wrangler.production.toml
 ```
 
 ## Development Notes

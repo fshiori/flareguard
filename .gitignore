@@ -1,2 +1,7 @@
 .worktrees/
 node_modules/
+.env
+.env.*
+!.env.example
+wrangler.local.toml
+wrangler.production.toml

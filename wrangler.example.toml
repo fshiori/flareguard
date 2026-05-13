@@ -1,0 +1,8 @@
+name = "flareguard"
+main = "src/index.ts"
+compatibility_date = "2026-05-13"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "flareguard"
+database_id = "<your-d1-database-id>"
