@@ -48,6 +48,36 @@ export const endpoints: EndpointDefinition[] = [
       { type: "d1_database", id: match[2] }
     ],
     upstreamPath: (match) => `/client/v4/accounts/${match[1]}/d1/database/${match[2]}/raw`
+  },
+  {
+    id: "kv.key.put",
+    method: "PUT",
+    pattern: /^\/client\/v4\/accounts\/([^/]+)\/storage\/kv\/namespaces\/([^/]+)\/values\/(.+)$/,
+    requiredCapability: "kv.namespace.write",
+    extractResources: (match) => [
+      { type: "account", id: match[1] },
+      { type: "kv_namespace", id: match[2] }
+    ],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/storage/kv/namespaces/${match[2]}/values/${match[3]}`
+  },
+  {
+    id: "workers.script.put",
+    method: "PUT",
+    pattern: /^\/client\/v4\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)$/,
+    requiredCapability: "workers.script.update_content",
+    extractResources: (match) => [
+      { type: "account", id: match[1] },
+      { type: "workers_script", id: match[2] }
+    ],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts/${match[2]}`
+  },
+  {
+    id: "account.get",
+    method: "GET",
+    pattern: /^\/client\/v4\/accounts\/([^/]+)$/,
+    requiredCapability: "account.self.read",
+    extractResources: (match) => [{ type: "account", id: match[1] }],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}`
   }
 ];
 
