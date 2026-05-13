@@ -33,6 +33,19 @@ export function normalizeGrantRow(row: GrantRow): Grant {
   };
 }
 
+export async function listGrantsForKey(db: D1Database, keyId: string): Promise<Grant[]> {
+  const result = await db
+    .prepare(
+      `SELECT id, key_id, capability, resource_type, resource_id, constraints_json
+       FROM grants
+       WHERE key_id = ?`
+    )
+    .bind(keyId)
+    .all<GrantRow>();
+
+  return (result.results ?? []).map(normalizeGrantRow);
+}
+
 function toHex(bytes: ArrayBuffer): string {
   return [...new Uint8Array(bytes)]
     .map((byte) => byte.toString(16).padStart(2, "0"))
