@@ -251,7 +251,7 @@ export const endpoints: EndpointDefinition[] = [
   {
     id: "workers.script.subdomain.get",
     method: "GET",
-    pattern: /^\/client\/v4\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)\/subdomain$/,
+    pattern: /^\/client\/v4\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)\/subdomain\/?$/,
     requiredCapability: "workers.script.subdomain.read",
     extractResources: (match) => [
       { type: "account", id: match[1] },
@@ -262,7 +262,7 @@ export const endpoints: EndpointDefinition[] = [
   {
     id: "workers.script.subdomain.get.raw",
     method: "GET",
-    pattern: /^\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)\/subdomain$/,
+    pattern: /^\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)\/subdomain\/?$/,
     requiredCapability: "workers.script.subdomain.read",
     extractResources: (match) => [
       { type: "account", id: match[1] },

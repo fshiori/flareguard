@@ -220,6 +220,12 @@ describe("matchEndpoint", () => {
     expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts/script-a/subdomain");
   });
 
+  it("matches Workers script subdomain read with a trailing slash", () => {
+    const match = matchEndpoint("GET", "/accounts/acct_1/workers/scripts/script-a/subdomain/");
+    expect(match?.definition.id).toBe("workers.script.subdomain.get.raw");
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts/script-a/subdomain");
+  });
+
   it("matches account read", () => {
     const match = matchEndpoint("GET", "/client/v4/accounts/acct_1");
     expect(match?.definition.id).toBe("account.get");
