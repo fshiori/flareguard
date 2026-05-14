@@ -1,6 +1,7 @@
 {
   "name": "flareguard",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "admin:add-grant": "node scripts/admin/add-grant.mjs",
