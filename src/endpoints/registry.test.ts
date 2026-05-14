@@ -27,6 +27,50 @@ describe("matchEndpoint", () => {
     expect(match?.resources).toContainEqual({ type: "workers_script", id: "script-a" });
   });
 
+  it("matches Workers service read with client v4 prefix and extracts script name", () => {
+    const match = matchEndpoint("GET", "/client/v4/accounts/acct_1/workers/services/script-a");
+    expect(match?.definition.id).toBe("workers.service.get");
+    expect(match?.definition.requiredCapability).toBe("workers.service.read");
+    expect(match?.resources).toEqual([
+      { type: "account", id: "acct_1" },
+      { type: "workers_script", id: "script-a" }
+    ]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/services/script-a");
+  });
+
+  it("matches Workers service read without client v4 prefix and maps upstream path", () => {
+    const match = matchEndpoint("GET", "/accounts/acct_1/workers/services/script-a");
+    expect(match?.definition.id).toBe("workers.service.get.raw");
+    expect(match?.definition.requiredCapability).toBe("workers.service.read");
+    expect(match?.resources).toEqual([
+      { type: "account", id: "acct_1" },
+      { type: "workers_script", id: "script-a" }
+    ]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/services/script-a");
+  });
+
+  it("matches Workers script deployments read with client v4 prefix and extracts script name", () => {
+    const match = matchEndpoint("GET", "/client/v4/accounts/acct_1/workers/scripts/script-a/deployments");
+    expect(match?.definition.id).toBe("workers.script.deployments.list");
+    expect(match?.definition.requiredCapability).toBe("workers.script.deployments.read");
+    expect(match?.resources).toEqual([
+      { type: "account", id: "acct_1" },
+      { type: "workers_script", id: "script-a" }
+    ]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts/script-a/deployments");
+  });
+
+  it("matches Workers script deployments read without client v4 prefix and maps upstream path", () => {
+    const match = matchEndpoint("GET", "/accounts/acct_1/workers/scripts/script-a/deployments");
+    expect(match?.definition.id).toBe("workers.script.deployments.list.raw");
+    expect(match?.definition.requiredCapability).toBe("workers.script.deployments.read");
+    expect(match?.resources).toEqual([
+      { type: "account", id: "acct_1" },
+      { type: "workers_script", id: "script-a" }
+    ]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts/script-a/deployments");
+  });
+
   it("matches account read", () => {
     const match = matchEndpoint("GET", "/client/v4/accounts/acct_1");
     expect(match?.definition.id).toBe("account.get");

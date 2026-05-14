@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+import { Context, Hono } from "hono";
 import { fetchCloudflare } from "./cloudflare/upstream";
 import { collectEndpointResources, matchEndpoint, validateEndpointRequest } from "./endpoints/registry";
 import type { Env } from "./env";
@@ -10,7 +10,7 @@ const app = new Hono<{ Bindings: Env }>();
 
 app.get("/health", (c) => c.json({ ok: true }));
 
-app.all("/client/v4/*", async (c) => {
+const handleProxyRequest = async (c: Context<{ Bindings: Env }>) => {
   const authorization = c.req.header("Authorization");
   if (!authorization?.startsWith("Bearer ")) {
     return c.json(cloudflareErrorBody(10001, "missing proxy key"), 401);
@@ -53,6 +53,9 @@ app.all("/client/v4/*", async (c) => {
     headers: new Headers(c.req.raw.headers),
     body: c.req.raw.body
   });
-});
+};
+
+app.all("/client/v4/*", handleProxyRequest);
+app.all("/accounts/*", handleProxyRequest);
 
 export default app;
