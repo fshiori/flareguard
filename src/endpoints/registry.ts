@@ -131,6 +131,28 @@ export const endpoints: EndpointDefinition[] = [
     upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts/${match[2]}/deployments`
   },
   {
+    id: "workers.script.deployment.create",
+    method: "POST",
+    pattern: /^\/client\/v4\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)\/deployments$/,
+    requiredCapability: "workers.script.deployment.create",
+    extractResources: (match) => [
+      { type: "account", id: match[1] },
+      { type: "workers_script", id: match[2] }
+    ],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts/${match[2]}/deployments`
+  },
+  {
+    id: "workers.script.deployment.create.raw",
+    method: "POST",
+    pattern: /^\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)\/deployments$/,
+    requiredCapability: "workers.script.deployment.create",
+    extractResources: (match) => [
+      { type: "account", id: match[1] },
+      { type: "workers_script", id: match[2] }
+    ],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts/${match[2]}/deployments`
+  },
+  {
     id: "workers.script.version.create",
     method: "POST",
     pattern: /^\/client\/v4\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)\/versions$/,

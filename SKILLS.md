@@ -139,6 +139,23 @@ GET /client/v4/accounts/:account_id/workers/scripts/:script_name/deployments
 GET /accounts/:account_id/workers/scripts/:script_name/deployments
 ```
 
+### Workers Script Deployment Create
+
+Use for activating or creating a Worker script deployment scoped to one script name.
+
+```text
+capability: workers.script.deployment.create
+resource_type: workers_script
+resource_id: <worker-script-name>
+```
+
+Supported paths:
+
+```text
+POST /client/v4/accounts/:account_id/workers/scripts/:script_name/deployments
+POST /accounts/:account_id/workers/scripts/:script_name/deployments
+```
+
 ### Workers Script Version Create
 
 Use for creating Worker script versions scoped to one script name.

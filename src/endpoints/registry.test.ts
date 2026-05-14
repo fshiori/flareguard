@@ -82,6 +82,28 @@ describe("matchEndpoint", () => {
     expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts/script-a/deployments");
   });
 
+  it("matches Workers script deployment create with client v4 prefix", () => {
+    const match = matchEndpoint("POST", "/client/v4/accounts/acct_1/workers/scripts/script-a/deployments");
+    expect(match?.definition.id).toBe("workers.script.deployment.create");
+    expect(match?.definition.requiredCapability).toBe("workers.script.deployment.create");
+    expect(match?.resources).toEqual([
+      { type: "account", id: "acct_1" },
+      { type: "workers_script", id: "script-a" }
+    ]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts/script-a/deployments");
+  });
+
+  it("matches Workers script deployment create without client v4 prefix", () => {
+    const match = matchEndpoint("POST", "/accounts/acct_1/workers/scripts/script-a/deployments");
+    expect(match?.definition.id).toBe("workers.script.deployment.create.raw");
+    expect(match?.definition.requiredCapability).toBe("workers.script.deployment.create");
+    expect(match?.resources).toEqual([
+      { type: "account", id: "acct_1" },
+      { type: "workers_script", id: "script-a" }
+    ]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts/script-a/deployments");
+  });
+
   it("matches Workers script version create with client v4 prefix", () => {
     const match = matchEndpoint("POST", "/client/v4/accounts/acct_1/workers/scripts/script-a/versions");
     expect(match?.definition.id).toBe("workers.script.version.create");
