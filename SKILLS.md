@@ -122,7 +122,9 @@ GET /client/v4/accounts/:account_id
 
 ### Workers R2 Storage Write
 
-Use for generating temporary R2 credentials scoped to one bucket. The temporary credentials can then be used with R2's S3-compatible API.
+Prefer native Cloudflare R2 bucket-scoped API tokens for R2 object access. R2 already supports per-bucket Object Read & Write credentials, so most clients should use R2 directly instead of routing object access through FlareGuard.
+
+FlareGuard's R2 capability is optional and exists only for generating temporary R2 credentials scoped to one bucket.
 
 ```text
 capability: r2.bucket.object.write
@@ -148,6 +150,8 @@ Request body:
 ```
 
 FlareGuard only allows `object-read-write` temporary credentials. It does not proxy the S3-compatible object upload API directly.
+
+If the client does not need short-lived credentials, use a native R2 bucket-scoped token instead.
 
 ## Error Behavior
 

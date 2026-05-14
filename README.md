@@ -2,7 +2,7 @@
 
 FlareGuard is a Cloudflare-compatible API proxy that issues its own proxy keys and enforces resource-level grants before forwarding requests to the Cloudflare API.
 
-Cloudflare API permissions are often broader than a single D1 database, KV namespace, Worker script, or R2 bucket. FlareGuard adds an explicit policy layer in front of selected Cloudflare endpoints so a client can use one proxy key with multiple narrowly scoped grants.
+Cloudflare API permissions are often broader than a single D1 database, KV namespace, or Worker script. FlareGuard adds an explicit policy layer in front of selected Cloudflare endpoints so a client can use one proxy key with multiple narrowly scoped grants.
 
 ## Current Scope
 
@@ -20,7 +20,7 @@ Out of scope for the MVP:
 - Full Cloudflare API compatibility.
 - Transparent pass-through proxying.
 - Account-wide list endpoints without response filtering.
-- R2 S3-compatible API proxying.
+- R2 S3-compatible API proxying. Prefer native R2 bucket-scoped tokens for R2 object access.
 - User-facing dashboard.
 - Automatic upstream Cloudflare token creation.
 
@@ -212,7 +212,17 @@ pnpm admin:add-grant \
   --constraints '{"prefixes":["tenant-a:"]}'
 ```
 
-R2 object write access is exposed through Cloudflare's temporary access credentials endpoint. The proxy restricts credentials to the granted bucket and only allows `object-read-write` permission:
+## R2 Access
+
+For R2 object access, prefer Cloudflare's native R2 bucket-scoped API tokens. R2 already supports limiting credentials to a specific bucket with Object Read & Write or Object Read only permissions, so FlareGuard is usually not needed for R2.
+
+Recommended approach:
+
+1. Create an R2 API token in Cloudflare scoped to the target bucket.
+2. Give the internal project only the R2 Access Key ID and Secret Access Key for that bucket.
+3. Use the normal R2 S3-compatible endpoint from the client.
+
+FlareGuard also has an optional R2 temporary credentials endpoint for cases where you want one FlareGuard key to mint short-lived S3 credentials:
 
 ```bash
 curl -X POST \
@@ -232,6 +242,8 @@ Cloudflare requires `parentAccessKeyId` for this endpoint:
   "ttlSeconds": 900
 }
 ```
+
+This optional path still requires a parent R2 access key id. If you do not need short-lived credentials, use native R2 bucket-scoped tokens instead.
 
 ## Development Notes
 

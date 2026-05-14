@@ -58,13 +58,17 @@ Do not broaden Workers Script support without validating request bodies and meta
 
 ## R2
 
-R2 object write support is implemented through Cloudflare's v4 temporary access credentials endpoint:
+Prefer Cloudflare's native R2 bucket-scoped API tokens for R2 object access. R2 already has a resource-level credential model, so FlareGuard is not the primary enforcement layer for normal R2 object reads/writes.
+
+FlareGuard has optional R2 temporary credential support through Cloudflare's v4 endpoint:
 
 ```text
 POST /client/v4/accounts/:account_id/r2/temp-access-credentials
 ```
 
 Do not add generic S3-compatible proxying to `/client/v4`. S3 signing and object APIs are a separate surface. R2 temporary credentials must remain scoped to the granted bucket and must not allow broader permissions than `object-read-write` without a deliberate design update.
+
+Do not present FlareGuard as required for R2. Document native R2 bucket-scoped tokens as the recommended path unless a caller explicitly needs short-lived credentials minted through FlareGuard.
 
 ## Admin CLI
 
