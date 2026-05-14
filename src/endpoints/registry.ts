@@ -249,6 +249,28 @@ export const endpoints: EndpointDefinition[] = [
     upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/subdomain`
   },
   {
+    id: "workers.script.subdomain.get",
+    method: "GET",
+    pattern: /^\/client\/v4\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)\/subdomain$/,
+    requiredCapability: "workers.script.subdomain.read",
+    extractResources: (match) => [
+      { type: "account", id: match[1] },
+      { type: "workers_script", id: match[2] }
+    ],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts/${match[2]}/subdomain`
+  },
+  {
+    id: "workers.script.subdomain.get.raw",
+    method: "GET",
+    pattern: /^\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)\/subdomain$/,
+    requiredCapability: "workers.script.subdomain.read",
+    extractResources: (match) => [
+      { type: "account", id: match[1] },
+      { type: "workers_script", id: match[2] }
+    ],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts/${match[2]}/subdomain`
+  },
+  {
     id: "account.get",
     method: "GET",
     pattern: /^\/client\/v4\/accounts\/([^/]+)$/,

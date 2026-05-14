@@ -198,6 +198,28 @@ describe("matchEndpoint", () => {
     expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/subdomain");
   });
 
+  it("matches Workers script subdomain read with client v4 prefix", () => {
+    const match = matchEndpoint("GET", "/client/v4/accounts/acct_1/workers/scripts/script-a/subdomain");
+    expect(match?.definition.id).toBe("workers.script.subdomain.get");
+    expect(match?.definition.requiredCapability).toBe("workers.script.subdomain.read");
+    expect(match?.resources).toEqual([
+      { type: "account", id: "acct_1" },
+      { type: "workers_script", id: "script-a" }
+    ]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts/script-a/subdomain");
+  });
+
+  it("matches Workers script subdomain read without client v4 prefix", () => {
+    const match = matchEndpoint("GET", "/accounts/acct_1/workers/scripts/script-a/subdomain");
+    expect(match?.definition.id).toBe("workers.script.subdomain.get.raw");
+    expect(match?.definition.requiredCapability).toBe("workers.script.subdomain.read");
+    expect(match?.resources).toEqual([
+      { type: "account", id: "acct_1" },
+      { type: "workers_script", id: "script-a" }
+    ]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts/script-a/subdomain");
+  });
+
   it("matches account read", () => {
     const match = matchEndpoint("GET", "/client/v4/accounts/acct_1");
     expect(match?.definition.id).toBe("account.get");

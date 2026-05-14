@@ -241,6 +241,23 @@ GET /client/v4/accounts/:account_id/workers/subdomain
 GET /accounts/:account_id/workers/subdomain
 ```
 
+### Workers Script Subdomain Read
+
+Use for reading a Worker script's workers.dev URL after deploy.
+
+```text
+capability: workers.script.subdomain.read
+resource_type: workers_script
+resource_id: <worker-script-name>
+```
+
+Supported paths:
+
+```text
+GET /client/v4/accounts/:account_id/workers/scripts/:script_name/subdomain
+GET /accounts/:account_id/workers/scripts/:script_name/subdomain
+```
+
 ### Account Settings Read
 
 Use for basic account metadata access scoped to one account.
