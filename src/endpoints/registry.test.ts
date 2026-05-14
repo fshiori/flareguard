@@ -71,6 +71,62 @@ describe("matchEndpoint", () => {
     expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts/script-a/deployments");
   });
 
+  it("matches Workers scripts list with client v4 prefix for filtered script reads", () => {
+    const match = matchEndpoint("GET", "/client/v4/accounts/acct_1/workers/scripts");
+    expect(match?.definition.id).toBe("workers.scripts.list");
+    expect(match?.definition.requiredCapability).toBe("workers.script.read");
+    expect(match?.definition.filterResponseByGrantResourceType).toBe("workers_script");
+    expect(match?.resources).toEqual([{ type: "account", id: "acct_1" }]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts");
+  });
+
+  it("matches Workers scripts list without client v4 prefix for filtered script reads", () => {
+    const match = matchEndpoint("GET", "/accounts/acct_1/workers/scripts");
+    expect(match?.definition.id).toBe("workers.scripts.list.raw");
+    expect(match?.definition.requiredCapability).toBe("workers.script.read");
+    expect(match?.definition.filterResponseByGrantResourceType).toBe("workers_script");
+    expect(match?.resources).toEqual([{ type: "account", id: "acct_1" }]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts");
+  });
+
+  it("matches Workers assets upload session create with client v4 prefix", () => {
+    const match = matchEndpoint("POST", "/client/v4/accounts/acct_1/workers/scripts/script-a/assets-upload-session");
+    expect(match?.definition.id).toBe("workers.assets.upload_session.create");
+    expect(match?.definition.requiredCapability).toBe("workers.assets.upload_session.create");
+    expect(match?.resources).toEqual([
+      { type: "account", id: "acct_1" },
+      { type: "workers_script", id: "script-a" }
+    ]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts/script-a/assets-upload-session");
+  });
+
+  it("matches Workers assets upload session create without client v4 prefix", () => {
+    const match = matchEndpoint("POST", "/accounts/acct_1/workers/scripts/script-a/assets-upload-session");
+    expect(match?.definition.id).toBe("workers.assets.upload_session.create.raw");
+    expect(match?.definition.requiredCapability).toBe("workers.assets.upload_session.create");
+    expect(match?.resources).toEqual([
+      { type: "account", id: "acct_1" },
+      { type: "workers_script", id: "script-a" }
+    ]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts/script-a/assets-upload-session");
+  });
+
+  it("matches Workers assets upload with client v4 prefix", () => {
+    const match = matchEndpoint("POST", "/client/v4/accounts/acct_1/workers/assets/upload");
+    expect(match?.definition.id).toBe("workers.assets.upload");
+    expect(match?.definition.requiredCapability).toBe("workers.assets.upload");
+    expect(match?.resources).toEqual([{ type: "account", id: "acct_1" }]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/assets/upload");
+  });
+
+  it("matches Workers assets upload without client v4 prefix", () => {
+    const match = matchEndpoint("POST", "/accounts/acct_1/workers/assets/upload");
+    expect(match?.definition.id).toBe("workers.assets.upload.raw");
+    expect(match?.definition.requiredCapability).toBe("workers.assets.upload");
+    expect(match?.resources).toEqual([{ type: "account", id: "acct_1" }]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/assets/upload");
+  });
+
   it("matches account read", () => {
     const match = matchEndpoint("GET", "/client/v4/accounts/acct_1");
     expect(match?.definition.id).toBe("account.get");

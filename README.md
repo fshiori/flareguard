@@ -62,11 +62,17 @@ GET  /client/v4/accounts/:account_id/workers/services/:script_name
 GET  /accounts/:account_id/workers/services/:script_name
 GET  /client/v4/accounts/:account_id/workers/scripts/:script_name/deployments
 GET  /accounts/:account_id/workers/scripts/:script_name/deployments
+GET  /client/v4/accounts/:account_id/workers/scripts
+GET  /accounts/:account_id/workers/scripts
+POST /client/v4/accounts/:account_id/workers/scripts/:script_name/assets-upload-session
+POST /accounts/:account_id/workers/scripts/:script_name/assets-upload-session
+POST /client/v4/accounts/:account_id/workers/assets/upload
+POST /accounts/:account_id/workers/assets/upload
 GET  /client/v4/accounts/:account_id
 POST /client/v4/accounts/:account_id/r2/temp-access-credentials
 ```
 
-Unsupported endpoints are rejected instead of passed through.
+Unsupported endpoints are rejected instead of passed through. Workers scripts list responses are filtered to scripts covered by `workers.script.read` grants.
 
 ## Grant Model
 
@@ -80,6 +86,9 @@ kv.namespace.write
 workers.script.update_content
 workers.service.read
 workers.script.deployments.read
+workers.script.read
+workers.assets.upload_session.create
+workers.assets.upload
 account.self.read
 ```
 

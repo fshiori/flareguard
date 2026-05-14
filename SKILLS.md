@@ -138,6 +138,57 @@ GET /client/v4/accounts/:account_id/workers/scripts/:script_name/deployments
 GET /accounts/:account_id/workers/scripts/:script_name/deployments
 ```
 
+### Workers Script Read
+
+Use for script-scoped reads needed by deployment tooling. Scripts list responses are filtered to scripts covered by this grant.
+
+```text
+capability: workers.script.read
+resource_type: workers_script
+resource_id: <worker-script-name>
+```
+
+Supported paths:
+
+```text
+GET /client/v4/accounts/:account_id/workers/scripts
+GET /accounts/:account_id/workers/scripts
+```
+
+### Workers Assets Upload Session Create
+
+Use for creating Worker static assets upload sessions scoped to one script name.
+
+```text
+capability: workers.assets.upload_session.create
+resource_type: workers_script
+resource_id: <worker-script-name>
+```
+
+Supported paths:
+
+```text
+POST /client/v4/accounts/:account_id/workers/scripts/:script_name/assets-upload-session
+POST /accounts/:account_id/workers/scripts/:script_name/assets-upload-session
+```
+
+### Workers Assets Upload
+
+Use for uploading Worker static assets batches. The Cloudflare endpoint is account-scoped, so this grant is scoped to the Cloudflare account.
+
+```text
+capability: workers.assets.upload
+resource_type: account
+resource_id: <cloudflare-account-id>
+```
+
+Supported paths:
+
+```text
+POST /client/v4/accounts/:account_id/workers/assets/upload
+POST /accounts/:account_id/workers/assets/upload
+```
+
 ### Account Settings Read
 
 Use for basic account metadata access scoped to one account.

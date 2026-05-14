@@ -5,6 +5,7 @@ export type EndpointDefinition = {
   method: string;
   pattern: RegExp;
   requiredCapability: string;
+  filterResponseByGrantResourceType?: string;
   extractResources: (match: RegExpMatchArray) => ResourceRef[];
   extractRequestResources?: (request: Request) => Promise<ResourceRef[]>;
   validateRequest?: (request: Request) => Promise<string | null>;
@@ -116,6 +117,62 @@ export const endpoints: EndpointDefinition[] = [
       { type: "workers_script", id: match[2] }
     ],
     upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts/${match[2]}/deployments`
+  },
+  {
+    id: "workers.scripts.list",
+    method: "GET",
+    pattern: /^\/client\/v4\/accounts\/([^/]+)\/workers\/scripts$/,
+    requiredCapability: "workers.script.read",
+    filterResponseByGrantResourceType: "workers_script",
+    extractResources: (match) => [{ type: "account", id: match[1] }],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts`
+  },
+  {
+    id: "workers.scripts.list.raw",
+    method: "GET",
+    pattern: /^\/accounts\/([^/]+)\/workers\/scripts$/,
+    requiredCapability: "workers.script.read",
+    filterResponseByGrantResourceType: "workers_script",
+    extractResources: (match) => [{ type: "account", id: match[1] }],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts`
+  },
+  {
+    id: "workers.assets.upload_session.create",
+    method: "POST",
+    pattern: /^\/client\/v4\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)\/assets-upload-session$/,
+    requiredCapability: "workers.assets.upload_session.create",
+    extractResources: (match) => [
+      { type: "account", id: match[1] },
+      { type: "workers_script", id: match[2] }
+    ],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts/${match[2]}/assets-upload-session`
+  },
+  {
+    id: "workers.assets.upload_session.create.raw",
+    method: "POST",
+    pattern: /^\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)\/assets-upload-session$/,
+    requiredCapability: "workers.assets.upload_session.create",
+    extractResources: (match) => [
+      { type: "account", id: match[1] },
+      { type: "workers_script", id: match[2] }
+    ],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts/${match[2]}/assets-upload-session`
+  },
+  {
+    id: "workers.assets.upload",
+    method: "POST",
+    pattern: /^\/client\/v4\/accounts\/([^/]+)\/workers\/assets\/upload$/,
+    requiredCapability: "workers.assets.upload",
+    extractResources: (match) => [{ type: "account", id: match[1] }],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/assets/upload`
+  },
+  {
+    id: "workers.assets.upload.raw",
+    method: "POST",
+    pattern: /^\/accounts\/([^/]+)\/workers\/assets\/upload$/,
+    requiredCapability: "workers.assets.upload",
+    extractResources: (match) => [{ type: "account", id: match[1] }],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/assets/upload`
   },
   {
     id: "account.get",
