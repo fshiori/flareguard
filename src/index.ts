@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { fetchCloudflare } from "./cloudflare/upstream";
-import { matchEndpoint } from "./endpoints/registry";
+import { collectEndpointResources, matchEndpoint, validateEndpointRequest } from "./endpoints/registry";
 import type { Env } from "./env";
 import { cloudflareErrorBody } from "./http/errors";
 import { authenticateProxyKey, listGrantsForKey } from "./keys/key-store";
@@ -22,19 +22,26 @@ app.all("/client/v4/*", async (c) => {
     return c.json(cloudflareErrorBody(10004, "unsupported endpoint"), 404);
   }
 
+  const validationError = await validateEndpointRequest(match, c.req.raw);
+  if (validationError) {
+    return c.json(cloudflareErrorBody(10005, validationError), 422);
+  }
+
+  const resources = await collectEndpointResources(match, c.req.raw);
+
   const proxyKeyValue = authorization.slice("Bearer ".length);
   const proxyKey = await authenticateProxyKey(c.env.DB, proxyKeyValue);
   if (!proxyKey) {
     return c.json(cloudflareErrorBody(10002, "invalid proxy key"), 401);
   }
 
-  const account = match.resources.find((resource) => resource.type === "account");
+  const account = resources.find((resource) => resource.type === "account");
   if (account && account.id !== proxyKey.accountId) {
     return c.json(cloudflareErrorBody(10003, "account access denied"), 403);
   }
 
   const grants = await listGrantsForKey(c.env.DB, proxyKey.id);
-  const decision = decidePolicy(grants, match.definition.requiredCapability, match.resources);
+  const decision = decidePolicy(grants, match.definition.requiredCapability, resources);
   if (!decision.allowed) {
     return c.json(cloudflareErrorBody(10003, "access denied"), 403);
   }

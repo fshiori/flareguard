@@ -121,4 +121,77 @@ describe("app", () => {
     expect(res.status).toBe(200);
     expect(fetchMock).toHaveBeenCalledOnce();
   });
+
+  it("returns 422 for R2 temporary credentials with unsupported permission", async () => {
+    const secretHash = await hashProxySecret("secret");
+    const res = await app.request("/client/v4/accounts/acct_1/r2/temp-access-credentials", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer fgk_123.secret",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        bucket: "bucket-a",
+        permission: "admin-read-write",
+        ttlSeconds: 900
+      })
+    }, createEnv({
+      keyRow: {
+        id: "fgk_123",
+        account_id: "acct_1",
+        secret_hash: secretHash,
+        status: "active",
+        expires_at: null
+      },
+      grantRows: [{
+        id: "grant_1",
+        key_id: "fgk_123",
+        capability: "r2.bucket.object.write",
+        resource_type: "r2_bucket",
+        resource_id: "bucket-a",
+        constraints_json: "{}"
+      }]
+    }));
+
+    expect(res.status).toBe(422);
+    expect(await res.json()).toMatchObject({ success: false });
+  });
+
+  it("forwards R2 temporary credentials when bucket grant matches", async () => {
+    const secretHash = await hashProxySecret("secret");
+    const fetchMock = vi.fn(async () => Response.json({ success: true }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await app.request("/client/v4/accounts/acct_1/r2/temp-access-credentials", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer fgk_123.secret",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        bucket: "bucket-a",
+        permission: "object-read-write",
+        ttlSeconds: 900
+      })
+    }, createEnv({
+      keyRow: {
+        id: "fgk_123",
+        account_id: "acct_1",
+        secret_hash: secretHash,
+        status: "active",
+        expires_at: null
+      },
+      grantRows: [{
+        id: "grant_1",
+        key_id: "fgk_123",
+        capability: "r2.bucket.object.write",
+        resource_type: "r2_bucket",
+        resource_id: "bucket-a",
+        constraints_json: "{}"
+      }]
+    }));
+
+    expect(res.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
 });

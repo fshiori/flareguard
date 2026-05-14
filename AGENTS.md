@@ -56,6 +56,16 @@ Do not broaden Workers Script support without validating request bodies and meta
 - service bindings
 - account-wide script operations
 
+## R2
+
+R2 object write support is implemented through Cloudflare's v4 temporary access credentials endpoint:
+
+```text
+POST /client/v4/accounts/:account_id/r2/temp-access-credentials
+```
+
+Do not add generic S3-compatible proxying to `/client/v4`. S3 signing and object APIs are a separate surface. R2 temporary credentials must remain scoped to the granted bucket and must not allow broader permissions than `object-read-write` without a deliberate design update.
+
 ## Admin CLI
 
 Admin scripts live in `scripts/admin`.

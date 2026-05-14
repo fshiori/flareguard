@@ -32,4 +32,10 @@ describe("matchEndpoint", () => {
     expect(match?.definition.id).toBe("account.get");
     expect(match?.resources).toEqual([{ type: "account", id: "acct_1" }]);
   });
+
+  it("matches R2 temporary credentials", () => {
+    const match = matchEndpoint("POST", "/client/v4/accounts/acct_1/r2/temp-access-credentials");
+    expect(match?.definition.id).toBe("r2.temp_access_credentials.create");
+    expect(match?.resources).toEqual([{ type: "account", id: "acct_1" }]);
+  });
 });

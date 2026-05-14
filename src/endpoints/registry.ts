@@ -6,6 +6,8 @@ export type EndpointDefinition = {
   pattern: RegExp;
   requiredCapability: string;
   extractResources: (match: RegExpMatchArray) => ResourceRef[];
+  extractRequestResources?: (request: Request) => Promise<ResourceRef[]>;
+  validateRequest?: (request: Request) => Promise<string | null>;
   upstreamPath: (match: RegExpMatchArray) => string;
 };
 
@@ -78,6 +80,34 @@ export const endpoints: EndpointDefinition[] = [
     requiredCapability: "account.self.read",
     extractResources: (match) => [{ type: "account", id: match[1] }],
     upstreamPath: (match) => `/client/v4/accounts/${match[1]}`
+  },
+  {
+    id: "r2.temp_access_credentials.create",
+    method: "POST",
+    pattern: /^\/client\/v4\/accounts\/([^/]+)\/r2\/temp-access-credentials$/,
+    requiredCapability: "r2.bucket.object.write",
+    extractResources: (match) => [{ type: "account", id: match[1] }],
+    extractRequestResources: async (request) => {
+      const body = await request.clone().json() as { bucket?: unknown };
+      if (typeof body.bucket !== "string" || body.bucket.length === 0) {
+        return [];
+      }
+      return [{ type: "r2_bucket", id: body.bucket }];
+    },
+    validateRequest: async (request) => {
+      const body = await request.clone().json() as {
+        bucket?: unknown;
+        permission?: unknown;
+      };
+      if (typeof body.bucket !== "string" || body.bucket.length === 0) {
+        return "missing R2 bucket";
+      }
+      if (body.permission !== "object-read-write") {
+        return "R2 temporary credentials must use object-read-write permission";
+      }
+      return null;
+    },
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/r2/temp-access-credentials`
   }
 ];
 
@@ -97,4 +127,22 @@ export function matchEndpoint(method: string, pathname: string): EndpointMatch |
     };
   }
   return null;
+}
+
+export async function collectEndpointResources(
+  match: EndpointMatch,
+  request: Request
+): Promise<ResourceRef[]> {
+  if (!match.definition.extractRequestResources) {
+    return match.resources;
+  }
+  const requestResources = await match.definition.extractRequestResources(request);
+  return [...match.resources, ...requestResources];
+}
+
+export async function validateEndpointRequest(match: EndpointMatch, request: Request): Promise<string | null> {
+  if (!match.definition.validateRequest) {
+    return null;
+  }
+  return match.definition.validateRequest(request);
 }

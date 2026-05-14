@@ -122,7 +122,7 @@ GET /client/v4/accounts/:account_id
 
 ### Workers R2 Storage Write
 
-Capability model:
+Use for generating temporary R2 credentials scoped to one bucket. The temporary credentials can then be used with R2's S3-compatible API.
 
 ```text
 capability: r2.bucket.object.write
@@ -130,7 +130,23 @@ resource_type: r2_bucket
 resource_id: <r2-bucket-name>
 ```
 
-R2 endpoint support must be added explicitly before clients can use this through FlareGuard. Do not assume generic pass-through is available.
+Supported path:
+
+```text
+POST /client/v4/accounts/:account_id/r2/temp-access-credentials
+```
+
+Request body:
+
+```json
+{
+  "bucket": "<r2-bucket-name>",
+  "permission": "object-read-write",
+  "ttlSeconds": 900
+}
+```
+
+FlareGuard only allows `object-read-write` temporary credentials. It does not proxy the S3-compatible object upload API directly.
 
 ## Error Behavior
 

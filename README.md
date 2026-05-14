@@ -59,6 +59,7 @@ POST /client/v4/accounts/:account_id/d1/database/:database_id/raw
 PUT  /client/v4/accounts/:account_id/storage/kv/namespaces/:namespace_id/values/:key
 PUT  /client/v4/accounts/:account_id/workers/scripts/:script_name
 GET  /client/v4/accounts/:account_id
+POST /client/v4/accounts/:account_id/r2/temp-access-credentials
 ```
 
 Unsupported endpoints are rejected instead of passed through.
@@ -209,6 +210,16 @@ pnpm admin:add-grant \
   --resource-type kv_namespace \
   --resource-id <kv-namespace-id> \
   --constraints '{"prefixes":["tenant-a:"]}'
+```
+
+R2 object write access is exposed through Cloudflare's temporary access credentials endpoint. The proxy restricts credentials to the granted bucket and only allows `object-read-write` permission:
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer fgk_<key-id>.<secret>" \
+  -H "Content-Type: application/json" \
+  --data '{"bucket":"<r2-bucket-name>","permission":"object-read-write","ttlSeconds":900}' \
+  https://flareguard.fshiori.workers.dev/client/v4/accounts/<account-id>/r2/temp-access-credentials
 ```
 
 ## Development Notes
