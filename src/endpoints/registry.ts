@@ -74,6 +74,50 @@ export const endpoints: EndpointDefinition[] = [
     upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts/${match[2]}`
   },
   {
+    id: "workers.service.get",
+    method: "GET",
+    pattern: /^\/client\/v4\/accounts\/([^/]+)\/workers\/services\/([^/]+)$/,
+    requiredCapability: "workers.service.read",
+    extractResources: (match) => [
+      { type: "account", id: match[1] },
+      { type: "workers_script", id: match[2] }
+    ],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/services/${match[2]}`
+  },
+  {
+    id: "workers.service.get.raw",
+    method: "GET",
+    pattern: /^\/accounts\/([^/]+)\/workers\/services\/([^/]+)$/,
+    requiredCapability: "workers.service.read",
+    extractResources: (match) => [
+      { type: "account", id: match[1] },
+      { type: "workers_script", id: match[2] }
+    ],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/services/${match[2]}`
+  },
+  {
+    id: "workers.script.deployments.list",
+    method: "GET",
+    pattern: /^\/client\/v4\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)\/deployments$/,
+    requiredCapability: "workers.script.deployments.read",
+    extractResources: (match) => [
+      { type: "account", id: match[1] },
+      { type: "workers_script", id: match[2] }
+    ],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts/${match[2]}/deployments`
+  },
+  {
+    id: "workers.script.deployments.list.raw",
+    method: "GET",
+    pattern: /^\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)\/deployments$/,
+    requiredCapability: "workers.script.deployments.read",
+    extractResources: (match) => [
+      { type: "account", id: match[1] },
+      { type: "workers_script", id: match[2] }
+    ],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts/${match[2]}/deployments`
+  },
+  {
     id: "account.get",
     method: "GET",
     pattern: /^\/client\/v4\/accounts\/([^/]+)$/,

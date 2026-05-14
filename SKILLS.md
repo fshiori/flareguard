@@ -104,6 +104,40 @@ PUT /client/v4/accounts/:account_id/workers/scripts/:script_name
 
 This is high risk. Only grant it to trusted clients until body and metadata validation are stricter.
 
+### Workers Service Read
+
+Use for Worker service metadata reads scoped to one script name.
+
+```text
+capability: workers.service.read
+resource_type: workers_script
+resource_id: <worker-script-name>
+```
+
+Supported paths:
+
+```text
+GET /client/v4/accounts/:account_id/workers/services/:script_name
+GET /accounts/:account_id/workers/services/:script_name
+```
+
+### Workers Script Deployments Read
+
+Use for Worker script deployment metadata reads scoped to one script name.
+
+```text
+capability: workers.script.deployments.read
+resource_type: workers_script
+resource_id: <worker-script-name>
+```
+
+Supported paths:
+
+```text
+GET /client/v4/accounts/:account_id/workers/scripts/:script_name/deployments
+GET /accounts/:account_id/workers/scripts/:script_name/deployments
+```
+
 ### Account Settings Read
 
 Use for basic account metadata access scoped to one account.

@@ -122,6 +122,66 @@ describe("app", () => {
     expect(fetchMock).toHaveBeenCalledOnce();
   });
 
+  it("forwards Workers service reads from Wrangler raw account paths when the script grant matches", async () => {
+    const secretHash = await hashProxySecret("secret");
+    const fetchMock = vi.fn(async () => Response.json({ success: true }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await app.request("/accounts/acct_1/workers/services/script-a", {
+      method: "GET",
+      headers: { Authorization: "Bearer fgk_123.secret" }
+    }, createEnv({
+      keyRow: {
+        id: "fgk_123",
+        account_id: "acct_1",
+        secret_hash: secretHash,
+        status: "active",
+        expires_at: null
+      },
+      grantRows: [{
+        id: "grant_1",
+        key_id: "fgk_123",
+        capability: "workers.service.read",
+        resource_type: "workers_script",
+        resource_id: "script-a",
+        constraints_json: "{}"
+      }]
+    }));
+
+    expect(res.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
+  it("forwards Workers script deployments reads from Wrangler raw account paths when the script grant matches", async () => {
+    const secretHash = await hashProxySecret("secret");
+    const fetchMock = vi.fn(async () => Response.json({ success: true }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await app.request("/accounts/acct_1/workers/scripts/script-a/deployments", {
+      method: "GET",
+      headers: { Authorization: "Bearer fgk_123.secret" }
+    }, createEnv({
+      keyRow: {
+        id: "fgk_123",
+        account_id: "acct_1",
+        secret_hash: secretHash,
+        status: "active",
+        expires_at: null
+      },
+      grantRows: [{
+        id: "grant_1",
+        key_id: "fgk_123",
+        capability: "workers.script.deployments.read",
+        resource_type: "workers_script",
+        resource_id: "script-a",
+        constraints_json: "{}"
+      }]
+    }));
+
+    expect(res.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
   it("returns 422 for R2 temporary credentials with unsupported permission", async () => {
     const secretHash = await hashProxySecret("secret");
     const res = await app.request("/client/v4/accounts/acct_1/r2/temp-access-credentials", {
