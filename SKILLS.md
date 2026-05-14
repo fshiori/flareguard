@@ -100,6 +100,7 @@ Supported path:
 
 ```text
 PUT /client/v4/accounts/:account_id/workers/scripts/:script_name
+PUT /accounts/:account_id/workers/scripts/:script_name
 ```
 
 This is high risk. Only grant it to trusted clients until body and metadata validation are stricter.
@@ -174,7 +175,7 @@ POST /accounts/:account_id/workers/scripts/:script_name/assets-upload-session
 
 ### Workers Assets Upload
 
-Use for uploading Worker static assets batches. The Cloudflare endpoint is account-scoped, so this grant is scoped to the Cloudflare account.
+Use for uploading Worker static assets batches. The Cloudflare endpoint is account-scoped, so this grant is scoped to the Cloudflare account. Wrangler normally authorizes this endpoint with the Cloudflare upload-session JWT returned by the asset upload session endpoint; FlareGuard forwards that JWT to Cloudflare for this endpoint.
 
 ```text
 capability: workers.assets.upload
@@ -187,6 +188,23 @@ Supported paths:
 ```text
 POST /client/v4/accounts/:account_id/workers/assets/upload
 POST /accounts/:account_id/workers/assets/upload
+```
+
+### Workers Subdomain Read
+
+Use for reading the account workers.dev subdomain after deploy.
+
+```text
+capability: workers.subdomain.read
+resource_type: account
+resource_id: <cloudflare-account-id>
+```
+
+Supported paths:
+
+```text
+GET /client/v4/accounts/:account_id/workers/subdomain
+GET /accounts/:account_id/workers/subdomain
 ```
 
 ### Account Settings Read

@@ -27,6 +27,17 @@ describe("matchEndpoint", () => {
     expect(match?.resources).toContainEqual({ type: "workers_script", id: "script-a" });
   });
 
+  it("matches Workers script update without client v4 prefix and maps upstream path", () => {
+    const match = matchEndpoint("PUT", "/accounts/acct_1/workers/scripts/script-a");
+    expect(match?.definition.id).toBe("workers.script.put.raw");
+    expect(match?.definition.requiredCapability).toBe("workers.script.update_content");
+    expect(match?.resources).toEqual([
+      { type: "account", id: "acct_1" },
+      { type: "workers_script", id: "script-a" }
+    ]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts/script-a");
+  });
+
   it("matches Workers service read with client v4 prefix and extracts script name", () => {
     const match = matchEndpoint("GET", "/client/v4/accounts/acct_1/workers/services/script-a");
     expect(match?.definition.id).toBe("workers.service.get");
@@ -125,6 +136,22 @@ describe("matchEndpoint", () => {
     expect(match?.definition.requiredCapability).toBe("workers.assets.upload");
     expect(match?.resources).toEqual([{ type: "account", id: "acct_1" }]);
     expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/assets/upload");
+  });
+
+  it("matches Workers subdomain read with client v4 prefix", () => {
+    const match = matchEndpoint("GET", "/client/v4/accounts/acct_1/workers/subdomain");
+    expect(match?.definition.id).toBe("workers.subdomain.get");
+    expect(match?.definition.requiredCapability).toBe("workers.subdomain.read");
+    expect(match?.resources).toEqual([{ type: "account", id: "acct_1" }]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/subdomain");
+  });
+
+  it("matches Workers subdomain read without client v4 prefix", () => {
+    const match = matchEndpoint("GET", "/accounts/acct_1/workers/subdomain");
+    expect(match?.definition.id).toBe("workers.subdomain.get.raw");
+    expect(match?.definition.requiredCapability).toBe("workers.subdomain.read");
+    expect(match?.resources).toEqual([{ type: "account", id: "acct_1" }]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/subdomain");
   });
 
   it("matches account read", () => {

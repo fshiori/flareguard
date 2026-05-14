@@ -95,32 +95,42 @@ const handleProxyRequest = async (c: Context<{ Bindings: Env }>) => {
   }
 
   const resources = await collectEndpointResources(match, c.req.raw);
-
-  const proxyKeyValue = authorization.slice("Bearer ".length);
-  const proxyKey = await authenticateProxyKey(c.env.DB, proxyKeyValue);
-  if (!proxyKey) {
-    return c.json(cloudflareErrorBody(10002, "invalid proxy key"), 401);
-  }
-
-  const account = resources.find((resource) => resource.type === "account");
-  if (account && account.id !== proxyKey.accountId) {
-    return c.json(cloudflareErrorBody(10003, "account access denied"), 403);
-  }
-
-  const grants = await listGrantsForKey(c.env.DB, proxyKey.id);
+  const bearerValue = authorization.slice("Bearer ".length);
+  const passThroughAuthorization = match.definition.authorizationMode === "passthrough" && !bearerValue.startsWith("fgk_")
+    ? authorization
+    : null;
   let filterResourceIds: Set<string> | null = null;
-  if (match.definition.filterResponseByGrantResourceType) {
-    filterResourceIds = grantedResourceIds(
-      grants,
-      match.definition.requiredCapability,
-      match.definition.filterResponseByGrantResourceType
-    );
-    if (filterResourceIds.size === 0) {
-      return c.json(cloudflareErrorBody(10003, "access denied"), 403);
+
+  if (!passThroughAuthorization) {
+    const proxyKey = await authenticateProxyKey(c.env.DB, bearerValue);
+    if (!proxyKey) {
+      return c.json(cloudflareErrorBody(10002, "invalid proxy key"), 401);
+    }
+
+    const account = resources.find((resource) => resource.type === "account");
+    if (account && account.id !== proxyKey.accountId) {
+      return c.json(cloudflareErrorBody(10003, "account access denied"), 403);
+    }
+
+    const grants = await listGrantsForKey(c.env.DB, proxyKey.id);
+    if (match.definition.filterResponseByGrantResourceType) {
+      filterResourceIds = grantedResourceIds(
+        grants,
+        match.definition.requiredCapability,
+        match.definition.filterResponseByGrantResourceType
+      );
+      if (filterResourceIds.size === 0) {
+        return c.json(cloudflareErrorBody(10003, "access denied"), 403);
+      }
+    } else {
+      const decision = decidePolicy(grants, match.definition.requiredCapability, resources);
+      if (!decision.allowed) {
+        return c.json(cloudflareErrorBody(10003, "access denied"), 403);
+      }
     }
   } else {
-    const decision = decidePolicy(grants, match.definition.requiredCapability, resources);
-    if (!decision.allowed) {
+    const account = resources.find((resource) => resource.type === "account");
+    if (!account) {
       return c.json(cloudflareErrorBody(10003, "access denied"), 403);
     }
   }
@@ -130,7 +140,8 @@ const handleProxyRequest = async (c: Context<{ Bindings: Env }>) => {
     path: match.upstreamPath,
     search: url.search,
     headers: new Headers(c.req.raw.headers),
-    body: c.req.raw.body
+    body: c.req.raw.body,
+    authorization: passThroughAuthorization ?? undefined
   });
   if (filterResourceIds) {
     return filterCloudflareListResponse(upstreamResponse, filterResourceIds);

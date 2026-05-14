@@ -5,6 +5,7 @@ export type EndpointDefinition = {
   method: string;
   pattern: RegExp;
   requiredCapability: string;
+  authorizationMode?: "proxy_key" | "passthrough";
   filterResponseByGrantResourceType?: string;
   extractResources: (match: RegExpMatchArray) => ResourceRef[];
   extractRequestResources?: (request: Request) => Promise<ResourceRef[]>;
@@ -67,6 +68,17 @@ export const endpoints: EndpointDefinition[] = [
     id: "workers.script.put",
     method: "PUT",
     pattern: /^\/client\/v4\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)$/,
+    requiredCapability: "workers.script.update_content",
+    extractResources: (match) => [
+      { type: "account", id: match[1] },
+      { type: "workers_script", id: match[2] }
+    ],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts/${match[2]}`
+  },
+  {
+    id: "workers.script.put.raw",
+    method: "PUT",
+    pattern: /^\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)$/,
     requiredCapability: "workers.script.update_content",
     extractResources: (match) => [
       { type: "account", id: match[1] },
@@ -163,6 +175,7 @@ export const endpoints: EndpointDefinition[] = [
     method: "POST",
     pattern: /^\/client\/v4\/accounts\/([^/]+)\/workers\/assets\/upload$/,
     requiredCapability: "workers.assets.upload",
+    authorizationMode: "passthrough",
     extractResources: (match) => [{ type: "account", id: match[1] }],
     upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/assets/upload`
   },
@@ -171,8 +184,25 @@ export const endpoints: EndpointDefinition[] = [
     method: "POST",
     pattern: /^\/accounts\/([^/]+)\/workers\/assets\/upload$/,
     requiredCapability: "workers.assets.upload",
+    authorizationMode: "passthrough",
     extractResources: (match) => [{ type: "account", id: match[1] }],
     upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/assets/upload`
+  },
+  {
+    id: "workers.subdomain.get",
+    method: "GET",
+    pattern: /^\/client\/v4\/accounts\/([^/]+)\/workers\/subdomain$/,
+    requiredCapability: "workers.subdomain.read",
+    extractResources: (match) => [{ type: "account", id: match[1] }],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/subdomain`
+  },
+  {
+    id: "workers.subdomain.get.raw",
+    method: "GET",
+    pattern: /^\/accounts\/([^/]+)\/workers\/subdomain$/,
+    requiredCapability: "workers.subdomain.read",
+    extractResources: (match) => [{ type: "account", id: match[1] }],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/subdomain`
   },
   {
     id: "account.get",

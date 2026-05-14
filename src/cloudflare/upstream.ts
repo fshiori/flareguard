@@ -4,6 +4,7 @@ export type UpstreamRequest = {
   search: string;
   headers: Headers;
   body: BodyInit | null;
+  authorization?: string;
 };
 
 export function buildCloudflareUrl(path: string, search: string): string {
@@ -15,8 +16,10 @@ export async function fetchCloudflare(
   request: UpstreamRequest
 ): Promise<Response> {
   const headers = new Headers(request.headers);
-  headers.set("Authorization", `Bearer ${token}`);
+  headers.set("Authorization", request.authorization ?? `Bearer ${token}`);
   headers.delete("Host");
+  headers.delete("Content-Length");
+  headers.delete("Content-Encoding");
 
   return fetch(buildCloudflareUrl(request.path, request.search), {
     method: request.method,

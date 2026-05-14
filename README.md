@@ -58,6 +58,7 @@ POST /client/v4/accounts/:account_id/d1/database/:database_id/query
 POST /client/v4/accounts/:account_id/d1/database/:database_id/raw
 PUT  /client/v4/accounts/:account_id/storage/kv/namespaces/:namespace_id/values/:key
 PUT  /client/v4/accounts/:account_id/workers/scripts/:script_name
+PUT  /accounts/:account_id/workers/scripts/:script_name
 GET  /client/v4/accounts/:account_id/workers/services/:script_name
 GET  /accounts/:account_id/workers/services/:script_name
 GET  /client/v4/accounts/:account_id/workers/scripts/:script_name/deployments
@@ -68,11 +69,13 @@ POST /client/v4/accounts/:account_id/workers/scripts/:script_name/assets-upload-
 POST /accounts/:account_id/workers/scripts/:script_name/assets-upload-session
 POST /client/v4/accounts/:account_id/workers/assets/upload
 POST /accounts/:account_id/workers/assets/upload
+GET  /client/v4/accounts/:account_id/workers/subdomain
+GET  /accounts/:account_id/workers/subdomain
 GET  /client/v4/accounts/:account_id
 POST /client/v4/accounts/:account_id/r2/temp-access-credentials
 ```
 
-Unsupported endpoints are rejected instead of passed through. Workers scripts list responses are filtered to scripts covered by `workers.script.read` grants.
+Unsupported endpoints are rejected instead of passed through. Workers scripts list responses are filtered to scripts covered by `workers.script.read` grants. Workers asset upload requests may use the Cloudflare upload-session JWT returned by the asset upload session endpoint.
 
 ## Grant Model
 
@@ -89,6 +92,7 @@ workers.script.deployments.read
 workers.script.read
 workers.assets.upload_session.create
 workers.assets.upload
+workers.subdomain.read
 account.self.read
 ```
 

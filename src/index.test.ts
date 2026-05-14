@@ -152,6 +152,40 @@ describe("app", () => {
     expect(fetchMock).toHaveBeenCalledOnce();
   });
 
+  it("forwards Workers script updates from Wrangler raw account paths when the script grant matches", async () => {
+    const secretHash = await hashProxySecret("secret");
+    const fetchMock = vi.fn(async () => Response.json({ success: true }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await app.request("/accounts/acct_1/workers/scripts/script-a", {
+      method: "PUT",
+      headers: {
+        Authorization: "Bearer fgk_123.secret",
+        "Content-Type": "multipart/form-data; boundary=----form"
+      },
+      body: "------form\r\n------form--\r\n"
+    }, createEnv({
+      keyRow: {
+        id: "fgk_123",
+        account_id: "acct_1",
+        secret_hash: secretHash,
+        status: "active",
+        expires_at: null
+      },
+      grantRows: [{
+        id: "grant_1",
+        key_id: "fgk_123",
+        capability: "workers.script.update_content",
+        resource_type: "workers_script",
+        resource_id: "script-a",
+        constraints_json: "{}"
+      }]
+    }));
+
+    expect(res.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
   it("forwards Workers script deployments reads from Wrangler raw account paths when the script grant matches", async () => {
     const secretHash = await hashProxySecret("secret");
     const fetchMock = vi.fn(async () => Response.json({ success: true }));
@@ -290,6 +324,57 @@ describe("app", () => {
         id: "grant_1",
         key_id: "fgk_123",
         capability: "workers.assets.upload",
+        resource_type: "account",
+        resource_id: "acct_1",
+        constraints_json: "{}"
+      }]
+    }));
+
+    expect(res.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
+  it("forwards Workers assets uploads with Cloudflare upload session JWT authorization", async () => {
+    const fetchMock = vi.fn(async () => Response.json({ success: true }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await app.request("/accounts/acct_1/workers/assets/upload?base64=true", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer header.payload.signature",
+        "Content-Type": "multipart/form-data; boundary=----form"
+      },
+      body: "------form\r\n------form--\r\n"
+    }, createEnv({}));
+
+    expect(res.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledOnce();
+    const calls = fetchMock.mock.calls as unknown as Array<[string, RequestInit]>;
+    const init = calls[0]?.[1];
+    expect(init).toBeDefined();
+    expect(new Headers(init.headers).get("Authorization")).toBe("Bearer header.payload.signature");
+  });
+
+  it("forwards Workers subdomain reads from Wrangler raw account paths when the account grant matches", async () => {
+    const secretHash = await hashProxySecret("secret");
+    const fetchMock = vi.fn(async () => Response.json({ success: true }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await app.request("/accounts/acct_1/workers/subdomain", {
+      method: "GET",
+      headers: { Authorization: "Bearer fgk_123.secret" }
+    }, createEnv({
+      keyRow: {
+        id: "fgk_123",
+        account_id: "acct_1",
+        secret_hash: secretHash,
+        status: "active",
+        expires_at: null
+      },
+      grantRows: [{
+        id: "grant_1",
+        key_id: "fgk_123",
+        capability: "workers.subdomain.read",
         resource_type: "account",
         resource_id: "acct_1",
         constraints_json: "{}"
