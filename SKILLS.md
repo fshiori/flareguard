@@ -141,6 +141,7 @@ Request body:
 ```json
 {
   "bucket": "<r2-bucket-name>",
+  "parentAccessKeyId": "<parent-r2-access-key-id>",
   "permission": "object-read-write",
   "ttlSeconds": 900
 }

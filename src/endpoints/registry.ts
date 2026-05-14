@@ -97,10 +97,14 @@ export const endpoints: EndpointDefinition[] = [
     validateRequest: async (request) => {
       const body = await request.clone().json() as {
         bucket?: unknown;
+        parentAccessKeyId?: unknown;
         permission?: unknown;
       };
       if (typeof body.bucket !== "string" || body.bucket.length === 0) {
         return "missing R2 bucket";
+      }
+      if (typeof body.parentAccessKeyId !== "string" || body.parentAccessKeyId.length === 0) {
+        return "missing R2 parent access key id";
       }
       if (body.permission !== "object-read-write") {
         return "R2 temporary credentials must use object-read-write permission";

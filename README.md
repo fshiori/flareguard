@@ -222,6 +222,17 @@ curl -X POST \
   https://flareguard.fshiori.workers.dev/client/v4/accounts/<account-id>/r2/temp-access-credentials
 ```
 
+Cloudflare requires `parentAccessKeyId` for this endpoint:
+
+```json
+{
+  "bucket": "<r2-bucket-name>",
+  "parentAccessKeyId": "<parent-r2-access-key-id>",
+  "permission": "object-read-write",
+  "ttlSeconds": 900
+}
+```
+
 ## Development Notes
 
 - Keep new Cloudflare-compatible endpoints explicit in `src/endpoints/registry.ts`.
