@@ -77,6 +77,8 @@ GET  /client/v4/accounts/:account_id/workers/subdomain
 GET  /accounts/:account_id/workers/subdomain
 GET  /client/v4/accounts/:account_id/workers/scripts/:script_name/subdomain
 GET  /accounts/:account_id/workers/scripts/:script_name/subdomain
+POST /client/v4/accounts/:account_id/workers/scripts/:script_name/subdomain
+POST /accounts/:account_id/workers/scripts/:script_name/subdomain
 GET  /client/v4/accounts/:account_id
 POST /client/v4/accounts/:account_id/r2/temp-access-credentials
 ```
@@ -102,6 +104,7 @@ workers.assets.upload_session.create
 workers.assets.upload
 workers.subdomain.read
 workers.script.subdomain.read
+workers.script.subdomain.update
 account.self.read
 ```
 

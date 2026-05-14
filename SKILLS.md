@@ -258,6 +258,23 @@ GET /client/v4/accounts/:account_id/workers/scripts/:script_name/subdomain
 GET /accounts/:account_id/workers/scripts/:script_name/subdomain
 ```
 
+### Workers Script Subdomain Update
+
+Use for enabling or updating a Worker script's workers.dev subdomain.
+
+```text
+capability: workers.script.subdomain.update
+resource_type: workers_script
+resource_id: <worker-script-name>
+```
+
+Supported paths:
+
+```text
+POST /client/v4/accounts/:account_id/workers/scripts/:script_name/subdomain
+POST /accounts/:account_id/workers/scripts/:script_name/subdomain
+```
+
 ### Account Settings Read
 
 Use for basic account metadata access scoped to one account.
