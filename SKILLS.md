@@ -139,6 +139,23 @@ GET /client/v4/accounts/:account_id/workers/scripts/:script_name/deployments
 GET /accounts/:account_id/workers/scripts/:script_name/deployments
 ```
 
+### Workers Script Version Create
+
+Use for creating Worker script versions scoped to one script name.
+
+```text
+capability: workers.script.version.create
+resource_type: workers_script
+resource_id: <worker-script-name>
+```
+
+Supported paths:
+
+```text
+POST /client/v4/accounts/:account_id/workers/scripts/:script_name/versions
+POST /accounts/:account_id/workers/scripts/:script_name/versions
+```
+
 ### Workers Script Read
 
 Use for script-scoped reads needed by deployment tooling. Scripts list responses are filtered to scripts covered by this grant.

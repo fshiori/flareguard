@@ -63,6 +63,8 @@ GET  /client/v4/accounts/:account_id/workers/services/:script_name
 GET  /accounts/:account_id/workers/services/:script_name
 GET  /client/v4/accounts/:account_id/workers/scripts/:script_name/deployments
 GET  /accounts/:account_id/workers/scripts/:script_name/deployments
+POST /client/v4/accounts/:account_id/workers/scripts/:script_name/versions
+POST /accounts/:account_id/workers/scripts/:script_name/versions
 GET  /client/v4/accounts/:account_id/workers/scripts
 GET  /accounts/:account_id/workers/scripts
 POST /client/v4/accounts/:account_id/workers/scripts/:script_name/assets-upload-session
@@ -89,6 +91,7 @@ kv.namespace.write
 workers.script.update_content
 workers.service.read
 workers.script.deployments.read
+workers.script.version.create
 workers.script.read
 workers.assets.upload_session.create
 workers.assets.upload

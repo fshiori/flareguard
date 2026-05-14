@@ -216,6 +216,40 @@ describe("app", () => {
     expect(fetchMock).toHaveBeenCalledOnce();
   });
 
+  it("forwards Workers script version creates from Wrangler raw account paths when the script grant matches", async () => {
+    const secretHash = await hashProxySecret("secret");
+    const fetchMock = vi.fn(async () => Response.json({ success: true }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await app.request("/accounts/acct_1/workers/scripts/script-a/versions", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer fgk_123.secret",
+        "Content-Type": "multipart/form-data; boundary=----form"
+      },
+      body: "------form\r\n------form--\r\n"
+    }, createEnv({
+      keyRow: {
+        id: "fgk_123",
+        account_id: "acct_1",
+        secret_hash: secretHash,
+        status: "active",
+        expires_at: null
+      },
+      grantRows: [{
+        id: "grant_1",
+        key_id: "fgk_123",
+        capability: "workers.script.version.create",
+        resource_type: "workers_script",
+        resource_id: "script-a",
+        constraints_json: "{}"
+      }]
+    }));
+
+    expect(res.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
   it("filters Workers scripts list responses to script read grants", async () => {
     const secretHash = await hashProxySecret("secret");
     const fetchMock = vi.fn(async () => Response.json({
