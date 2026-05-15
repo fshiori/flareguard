@@ -38,6 +38,28 @@ describe("matchEndpoint", () => {
     expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts/script-a");
   });
 
+  it("matches Workers script settings update with client v4 prefix", () => {
+    const match = matchEndpoint("PATCH", "/client/v4/accounts/acct_1/workers/scripts/script-a/script-settings");
+    expect(match?.definition.id).toBe("workers.script.settings.patch");
+    expect(match?.definition.requiredCapability).toBe("workers.script.settings.update");
+    expect(match?.resources).toEqual([
+      { type: "account", id: "acct_1" },
+      { type: "workers_script", id: "script-a" }
+    ]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts/script-a/script-settings");
+  });
+
+  it("matches Workers script settings update without client v4 prefix", () => {
+    const match = matchEndpoint("PATCH", "/accounts/acct_1/workers/scripts/script-a/script-settings");
+    expect(match?.definition.id).toBe("workers.script.settings.patch.raw");
+    expect(match?.definition.requiredCapability).toBe("workers.script.settings.update");
+    expect(match?.resources).toEqual([
+      { type: "account", id: "acct_1" },
+      { type: "workers_script", id: "script-a" }
+    ]);
+    expect(match?.upstreamPath).toBe("/client/v4/accounts/acct_1/workers/scripts/script-a/script-settings");
+  });
+
   it("matches Workers service read with client v4 prefix and extracts script name", () => {
     const match = matchEndpoint("GET", "/client/v4/accounts/acct_1/workers/services/script-a");
     expect(match?.definition.id).toBe("workers.service.get");

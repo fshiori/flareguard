@@ -87,6 +87,28 @@ export const endpoints: EndpointDefinition[] = [
     upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts/${match[2]}`
   },
   {
+    id: "workers.script.settings.patch",
+    method: "PATCH",
+    pattern: /^\/client\/v4\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)\/script-settings$/,
+    requiredCapability: "workers.script.settings.update",
+    extractResources: (match) => [
+      { type: "account", id: match[1] },
+      { type: "workers_script", id: match[2] }
+    ],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts/${match[2]}/script-settings`
+  },
+  {
+    id: "workers.script.settings.patch.raw",
+    method: "PATCH",
+    pattern: /^\/accounts\/([^/]+)\/workers\/scripts\/([^/]+)\/script-settings$/,
+    requiredCapability: "workers.script.settings.update",
+    extractResources: (match) => [
+      { type: "account", id: match[1] },
+      { type: "workers_script", id: match[2] }
+    ],
+    upstreamPath: (match) => `/client/v4/accounts/${match[1]}/workers/scripts/${match[2]}/script-settings`
+  },
+  {
     id: "workers.service.get",
     method: "GET",
     pattern: /^\/client\/v4\/accounts\/([^/]+)\/workers\/services\/([^/]+)$/,

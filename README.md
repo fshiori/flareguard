@@ -59,6 +59,8 @@ POST /client/v4/accounts/:account_id/d1/database/:database_id/raw
 PUT  /client/v4/accounts/:account_id/storage/kv/namespaces/:namespace_id/values/:key
 PUT  /client/v4/accounts/:account_id/workers/scripts/:script_name
 PUT  /accounts/:account_id/workers/scripts/:script_name
+PATCH /client/v4/accounts/:account_id/workers/scripts/:script_name/script-settings
+PATCH /accounts/:account_id/workers/scripts/:script_name/script-settings
 GET  /client/v4/accounts/:account_id/workers/services/:script_name
 GET  /accounts/:account_id/workers/services/:script_name
 GET  /client/v4/accounts/:account_id/workers/scripts/:script_name/deployments
@@ -95,6 +97,7 @@ Grants are FlareGuard capabilities, not direct copies of Cloudflare permission l
 d1.database.write
 kv.namespace.write
 workers.script.update_content
+workers.script.settings.update
 workers.service.read
 workers.script.deployments.read
 workers.script.deployment.create

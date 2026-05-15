@@ -105,6 +105,23 @@ PUT /accounts/:account_id/workers/scripts/:script_name
 
 This is high risk. Only grant it to trusted clients until body and metadata validation are stricter.
 
+### Workers Script Settings Update
+
+Use for updating Worker script settings metadata scoped to one script name.
+
+```text
+capability: workers.script.settings.update
+resource_type: workers_script
+resource_id: <worker-script-name>
+```
+
+Supported paths:
+
+```text
+PATCH /client/v4/accounts/:account_id/workers/scripts/:script_name/script-settings
+PATCH /accounts/:account_id/workers/scripts/:script_name/script-settings
+```
+
 ### Workers Service Read
 
 Use for Worker service metadata reads scoped to one script name.
